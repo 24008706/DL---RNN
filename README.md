@@ -10,63 +10,83 @@ To develop a Recurrent Neural Network (RNN) model for predicting stock prices us
 ## DESIGN STEPS
 ### STEP 1: 
 
-Write your own steps
+Collect historical stock closing price data and perform preprocessing such as normalization and sequence creation.
 
 ### STEP 2: 
 
-
+plit the dataset into training and testing sets and convert them into PyTorch tensors and DataLoader format.
 
 ### STEP 3: 
 
-
+Design an RNN model using input, hidden, and output layers suitable for time-series prediction.
 
 ### STEP 4: 
-
+Define the loss function (Mean Squared Error) and optimizer (Adam) for training the model.
 
 
 ### STEP 5: 
 
-
+Train the RNN model over multiple epochs while updating weights using backpropagation through time.
 
 ### STEP 6: 
-
-
-
+Evaluate the trained model by plotting training loss and comparing predicted stock prices with actual prices.
 
 
 ## PROGRAM
-
-### Name:
-
-### Register Number:
-
-```python
+```
 # Define RNN Model
 class RNNModel(nn.Module):
-    # write your code here
-
-
-
+  def __init__(self,input_size=1,hidden_size=64,num_layers=2,output_size=1):
+    super(RNNModel,self).__init__()
+    self.rnn=nn.RNN(input_size,hidden_size,num_layers,batch_first=True)
+    self.fc=nn.Linear(hidden_size,output_size)
+  def forward(self,x):
+    out,_=self.rnn(x)
+    out=self.fc(out[:,-1,:])
+    return out
 
 # Train the Model
+def train_model(model,train_loader,criterion,optimizer,epochs=20):
+  train_losses=[]
+  model.train()
+  for epoch in range(epochs):
+    total_loss=0
+    for x_batch,y_batch in train_loader:
+      x_batch=x_batch.to(device)
+      y_batch=y_batch.to(device)
+      optimizer.zero_grad()
+      outputs = model(x_batch)
+      loss = criterion(outputs, y_batch)
+      loss.backward()
+      optimizer.step()
+      total_loss+=loss.item()
+    train_losses.append(total_loss/len(train_loader))
+    print(f'Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(train_loader):.4f}')
+  return train_losses
 
-# Write your code here
+train_losses = train_model(model, train_loader, criterion, optimizer, epochs=20)
 
-
+print('Name:Adchayakiruthika M S')
+print('Register Number:212223230005')
+plt.plot(train_losses, label='Training Loss')
+plt.xlabel('Epoch')
+plt.ylabel('MSE Loss')
+plt.title('Training Loss Over Epochs')
+plt.legend()
+plt.show()
 ```
+### Name:muthurevula sahithi
+
+### Register Number:212224040208
+## Training Loss Over Epochs Plot
+
+<img width="677" height="823" alt="image" src="https://github.com/user-attachments/assets/dd2715d3-50f1-404f-969a-3fcc6e876275" />
 
 ### OUTPUT
 
-## Training Loss Over Epochs Plot
-
-Include your plot here
-
 ## True Stock Price, Predicted Stock Price vs time
+<img width="910" height="540" alt="image" src="https://github.com/user-attachments/assets/37896b73-bc9f-4934-b050-a32cb1e6cbf7" />
 
-Include your plot here
-
-### Predictions
-Include the predictions on test data
 
 ## RESULT
 Include your result here
